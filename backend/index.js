@@ -77,6 +77,22 @@ app.use('/api/inventory', inventoryRoutes);
 app.use('/api/forecasts', forecastRoutes);
 app.use('/api/reports', reportRoutes);
 
+// Root route
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'AI-Driven Inventory Intelligence Platform API',
+    status: 'running',
+    version: '1.0.0',
+    endpoints: {
+      health: '/api/health',
+      auth: '/api/auth',
+      inventory: '/api/inventory',
+      forecasts: '/api/forecasts',
+      reports: '/api/reports'
+    }
+  });
+});
+
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
