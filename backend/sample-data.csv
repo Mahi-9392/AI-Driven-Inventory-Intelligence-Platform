@@ -1,0 +1,27 @@
+productId,productName,region,date,unitsSold,stockAvailable
+PROD001,Wireless Headphones,North,2024-01-01,45,200
+PROD001,Wireless Headphones,North,2024-01-02,52,195
+PROD001,Wireless Headphones,North,2024-01-03,48,190
+PROD001,Wireless Headphones,North,2024-01-04,55,185
+PROD001,Wireless Headphones,North,2024-01-05,60,180
+PROD001,Wireless Headphones,North,2024-01-06,58,175
+PROD001,Wireless Headphones,North,2024-01-07,62,170
+PROD001,Wireless Headphones,North,2024-01-08,65,165
+PROD001,Wireless Headphones,North,2024-01-09,70,160
+PROD001,Wireless Headphones,North,2024-01-10,68,155
+PROD001,Wireless Headphones,South,2024-01-01,35,150
+PROD001,Wireless Headphones,South,2024-01-02,38,145
+PROD001,Wireless Headphones,South,2024-01-03,40,140
+PROD001,Wireless Headphones,South,2024-01-04,42,135
+PROD001,Wireless Headphones,South,2024-01-05,45,130
+PROD002,Smart Watch,North,2024-01-01,25,100
+PROD002,Smart Watch,North,2024-01-02,28,95
+PROD002,Smart Watch,North,2024-01-03,30,90
+PROD002,Smart Watch,North,2024-01-04,32,85
+PROD002,Smart Watch,North,2024-01-05,35,80
+PROD002,Smart Watch,South,2024-01-01,20,120
+PROD002,Smart Watch,South,2024-01-02,22,115
+PROD002,Smart Watch,South,2024-01-03,25,110
+PROD002,Smart Watch,South,2024-01-04,28,105
+PROD002,Smart Watch,South,2024-01-05,30,100
+
