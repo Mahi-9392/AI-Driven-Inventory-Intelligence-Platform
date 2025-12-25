@@ -79,8 +79,9 @@ JWT_SECRET=6fc97e179bc2fb30443aa54e18d098031179aa1e012de11eb525cbb6247754b5e29d7
 
 #### 3. Groq API Key
 ```
-GROQ_API_KEY=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
+GROQ_API_KEY=your_groq_api_key_here
 ```
+*(Get your API key from https://console.groq.com/)*
 
 #### 4. Port (Optional - Railway auto-assigns)
 ```
@@ -100,10 +101,11 @@ FRONTEND_URL=https://your-vercel-app.vercel.app
 
 #### 7. Google OAuth (If using OAuth)
 ```
-GOOGLE_CLIENT_ID=1096596787754-scd2l5er4e7ultgqp9ltt4k7jrl5dveh.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=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
+GOOGLE_CLIENT_ID=your_google_client_id_here
+GOOGLE_CLIENT_SECRET=your_google_client_secret_here
 GOOGLE_REDIRECT_URI=https://your-railway-app.railway.app/api/auth/google/callback
 ```
+*(Get OAuth credentials from https://console.cloud.google.com/)*
 **Note:** Update `GOOGLE_REDIRECT_URI` after you get your Railway URL
 
 ---
