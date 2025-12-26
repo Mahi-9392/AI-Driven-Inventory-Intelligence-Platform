@@ -33,48 +33,50 @@ const LoginPage = () => {
 
     const result = await login(email, password);
     
-    console.log('Login result:', result);
+    console.log('=== LOGIN RESULT ===');
+    console.log('Success:', result.success);
+    console.log('Message:', result.message);
+    console.log('Code:', result.code);
+    console.log('Status:', result.status);
+    console.log('Full result:', JSON.stringify(result, null, 2));
     
     if (result.success) {
       navigate('/dashboard');
     } else {
       setError(result.message);
       
-      // Check if this is a Google-only account error or any 401 error
+      // ALWAYS show set password option for failed logins
+      // This allows Google-only users to set a password
+      // If they already have a password, setting it again won't hurt
       const message = (result.message || '').toLowerCase();
       const code = result.code || '';
       const status = result.status || null;
       
-      // Show set password option for:
-      // 1. Explicit Google-only account error
-      // 2. Any 401 error (unauthorized) - user might be Google-only
-      // 3. Error messages mentioning Google
-      // 4. Invalid credentials errors
-      const isGoogleOnlyError = 
+      // Show set password option for ANY failed login attempt
+      // This is safe because:
+      // 1. If user has password but it's wrong, they can try again
+      // 2. If user is Google-only, they can set a password
+      // 3. Setting password for existing password users just updates it
+      const shouldShowSetPassword = 
         code === 'GOOGLE_ONLY_ACCOUNT' ||
         status === 401 ||
-        message.includes('google sign-in') ||
-        message.includes('continue with google') ||
-        message.includes('google oauth') ||
-        message.includes('set a password for your account') ||
         message.includes('google') ||
-        message.includes('invalid credentials');
+        message.includes('invalid credentials') ||
+        message.includes('invalid') ||
+        true; // ALWAYS show it as fallback
       
+      console.log('Should show set password?', shouldShowSetPassword);
       console.log('Error details:', {
         message: result.message,
         code,
         status,
-        isGoogleOnlyError,
-        fullResult: result
+        shouldShowSetPassword
       });
       
-      // Always show set password option for 401 errors or Google-related errors
-      if (isGoogleOnlyError) {
+      if (shouldShowSetPassword) {
         console.log('✅ Showing set password option');
         setErrorCode('GOOGLE_ONLY_ACCOUNT');
         setShowSetPassword(true);
-      } else {
-        console.log('❌ Not showing set password - code:', code, 'status:', status, 'message:', result.message);
       }
     }
     
