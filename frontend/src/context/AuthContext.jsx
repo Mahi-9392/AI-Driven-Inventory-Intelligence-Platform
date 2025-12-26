@@ -38,10 +38,14 @@ export const AuthProvider = ({ children }) => {
       return { success: true };
     } catch (error) {
       console.error('Login error:', error);
+      console.error('Login error response:', error.response?.data);
       let errorMessage = 'Login failed';
+      let errorCode = null;
       
       if (error.response) {
         errorMessage = error.response.data?.message || error.response.data?.error || 'Login failed';
+        errorCode = error.response.data?.code || null;
+        console.log('Error code from backend:', errorCode);
       } else if (error.request) {
         errorMessage = 'Cannot connect to server. Please check if the backend is running.';
       } else {
@@ -51,7 +55,7 @@ export const AuthProvider = ({ children }) => {
       return { 
         success: false, 
         message: errorMessage,
-        code: error.response?.data?.code
+        code: errorCode
       };
     }
   };

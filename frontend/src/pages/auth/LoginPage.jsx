@@ -33,12 +33,20 @@ const LoginPage = () => {
 
     const result = await login(email, password);
     
+    console.log('Login result:', result);
+    
     if (result.success) {
       navigate('/dashboard');
     } else {
       setError(result.message);
       // Check if this is a Google-only account error
-      if (result.code === 'GOOGLE_ONLY_ACCOUNT' || result.message.includes('Google sign-in')) {
+      const isGoogleOnlyError = result.code === 'GOOGLE_ONLY_ACCOUNT' || 
+                                result.message.includes('Google sign-in') ||
+                                result.message.includes('Continue with Google');
+      
+      console.log('Is Google-only error?', isGoogleOnlyError, 'Code:', result.code);
+      
+      if (isGoogleOnlyError) {
         setErrorCode('GOOGLE_ONLY_ACCOUNT');
         setShowSetPassword(true);
       }
