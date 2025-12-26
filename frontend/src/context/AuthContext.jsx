@@ -55,7 +55,8 @@ export const AuthProvider = ({ children }) => {
       return { 
         success: false, 
         message: errorMessage,
-        code: errorCode
+        code: errorCode,
+        status: error.response?.status // Include status code for better detection
       };
     }
   };

@@ -40,31 +40,41 @@ const LoginPage = () => {
     } else {
       setError(result.message);
       
-      // Check if this is a Google-only account error
-      // Check multiple conditions to be more reliable
-      const message = result.message || '';
+      // Check if this is a Google-only account error or any 401 error
+      const message = (result.message || '').toLowerCase();
       const code = result.code || '';
+      const status = result.status || null;
       
+      // Show set password option for:
+      // 1. Explicit Google-only account error
+      // 2. Any 401 error (unauthorized) - user might be Google-only
+      // 3. Error messages mentioning Google
+      // 4. Invalid credentials errors
       const isGoogleOnlyError = 
         code === 'GOOGLE_ONLY_ACCOUNT' ||
-        message.toLowerCase().includes('google sign-in') ||
-        message.toLowerCase().includes('continue with google') ||
-        message.toLowerCase().includes('google oauth') ||
-        message.toLowerCase().includes('set a password for your account');
+        status === 401 ||
+        message.includes('google sign-in') ||
+        message.includes('continue with google') ||
+        message.includes('google oauth') ||
+        message.includes('set a password for your account') ||
+        message.includes('google') ||
+        message.includes('invalid credentials');
       
       console.log('Error details:', {
-        message,
+        message: result.message,
         code,
+        status,
         isGoogleOnlyError,
         fullResult: result
       });
       
+      // Always show set password option for 401 errors or Google-related errors
       if (isGoogleOnlyError) {
-        console.log('✅ Detected Google-only account error - showing set password option');
+        console.log('✅ Showing set password option');
         setErrorCode('GOOGLE_ONLY_ACCOUNT');
         setShowSetPassword(true);
       } else {
-        console.log('❌ Not a Google-only error - code:', code, 'message:', message);
+        console.log('❌ Not showing set password - code:', code, 'status:', status, 'message:', result.message);
       }
     }
     
