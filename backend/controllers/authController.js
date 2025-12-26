@@ -188,14 +188,12 @@ export const login = async (req, res, next) => {
     console.log('  - Has password:', !!user.password);
     console.log('  - Password length:', user.password ? user.password.length : 0);
 
-    // Check if user is OAuth-only (no password) - provide helpful message
+    // If user is Google OAuth only and has no password, automatically set the password they provided
     if (user.authProvider === 'google' && !user.password) {
-      console.log('❌ User is Google OAuth only. Cannot login with password.');
-      return res.status(401).json({ 
-        message: 'This account uses Google sign-in. Please use "Continue with Google" to sign in, or set a password for your account first.',
-        code: 'GOOGLE_ONLY_ACCOUNT',
-        canSetPassword: true
-      });
+      console.log('✅ User is Google OAuth only. Automatically setting password from login attempt.');
+      user.password = password; // Will be hashed by pre-save hook
+      await user.save();
+      console.log('✅ Password set successfully. Proceeding with login.');
     }
 
     // Verify password - user must have a password to login with email/password
