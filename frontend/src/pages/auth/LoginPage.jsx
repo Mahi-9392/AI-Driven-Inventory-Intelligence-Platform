@@ -39,16 +39,32 @@ const LoginPage = () => {
       navigate('/dashboard');
     } else {
       setError(result.message);
-      // Check if this is a Google-only account error
-      const isGoogleOnlyError = result.code === 'GOOGLE_ONLY_ACCOUNT' || 
-                                result.message.includes('Google sign-in') ||
-                                result.message.includes('Continue with Google');
       
-      console.log('Is Google-only error?', isGoogleOnlyError, 'Code:', result.code);
+      // Check if this is a Google-only account error
+      // Check multiple conditions to be more reliable
+      const message = result.message || '';
+      const code = result.code || '';
+      
+      const isGoogleOnlyError = 
+        code === 'GOOGLE_ONLY_ACCOUNT' ||
+        message.toLowerCase().includes('google sign-in') ||
+        message.toLowerCase().includes('continue with google') ||
+        message.toLowerCase().includes('google oauth') ||
+        message.toLowerCase().includes('set a password for your account');
+      
+      console.log('Error details:', {
+        message,
+        code,
+        isGoogleOnlyError,
+        fullResult: result
+      });
       
       if (isGoogleOnlyError) {
+        console.log('✅ Detected Google-only account error - showing set password option');
         setErrorCode('GOOGLE_ONLY_ACCOUNT');
         setShowSetPassword(true);
+      } else {
+        console.log('❌ Not a Google-only error - code:', code, 'message:', message);
       }
     }
     

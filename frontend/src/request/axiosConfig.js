@@ -41,10 +41,18 @@ axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Token expired or invalid
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
+      // Only redirect if we're not on the login/signup page and have a token
+      // Don't redirect during login attempts (no token yet)
+      const token = localStorage.getItem('token');
+      const isAuthPage = window.location.pathname === '/login' || window.location.pathname === '/signup';
+      
+      if (token && !isAuthPage) {
+        // Token expired or invalid - redirect to login
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+      }
+      // If no token or on auth page, let the error pass through for proper handling
     }
     return Promise.reject(error);
   }
