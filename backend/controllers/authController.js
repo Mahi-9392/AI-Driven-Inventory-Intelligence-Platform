@@ -188,11 +188,13 @@ export const login = async (req, res, next) => {
     console.log('  - Has password:', !!user.password);
     console.log('  - Password length:', user.password ? user.password.length : 0);
 
-    // Check if user is OAuth-only (no password) - only block if they don't have a password
+    // Check if user is OAuth-only (no password) - provide helpful message
     if (user.authProvider === 'google' && !user.password) {
       console.log('❌ User is Google OAuth only. Cannot login with password.');
       return res.status(401).json({ 
-        message: 'This account uses Google sign-in. Please use "Continue with Google" to sign in.' 
+        message: 'This account uses Google sign-in. Please use "Continue with Google" to sign in, or set a password for your account first.',
+        code: 'GOOGLE_ONLY_ACCOUNT',
+        canSetPassword: true
       });
     }
 
@@ -425,6 +427,69 @@ export const handleGoogleCallback = async (req, res, next) => {
       error.message || 'Authentication failed. Please try again.'
     );
     res.redirect(`${frontendUrl}/auth/google/error?error=${errorMessage}`);
+  }
+};
+
+// Set password for Google OAuth users (or update password for any user)
+export const setPassword = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ 
+        message: 'Email and password are required' 
+      });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({ 
+        message: 'Password must be at least 6 characters' 
+      });
+    }
+
+    // Check MongoDB connection
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(503).json({ 
+        message: 'Database connection unavailable' 
+      });
+    }
+
+    console.log('=== SET PASSWORD REQUEST ===');
+    console.log('Email:', email);
+    console.log('Password length:', password.length);
+
+    // Find user
+    const user = await User.findOne({ email }).select('+password');
+    
+    if (!user) {
+      console.log('❌ User not found');
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    console.log('✅ User found:');
+    console.log('  - Auth Provider:', user.authProvider);
+    console.log('  - Has existing password:', !!user.password);
+
+    // Set the password (will be hashed by pre-save hook)
+    user.password = password;
+    
+    // If user was Google-only, update authProvider to allow both methods
+    // But keep it as 'google' so they can still use Google OAuth
+    // The password field will now be set, allowing email/password login too
+    
+    await user.save();
+    console.log('✅ Password set successfully');
+
+    res.json({
+      message: 'Password set successfully. You can now log in with email and password.',
+      success: true
+    });
+  } catch (error) {
+    console.error('Set password error:', error);
+    res.status(500).json({ 
+      message: 'Failed to set password',
+      error: error.message 
+    });
   }
 };
 

@@ -41,17 +41,18 @@ const userSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Hash password before saving (only for local auth)
+// Hash password before saving
 userSchema.pre('save', async function(next) {
-  // Only hash password if it's modified and user is NOT using Google OAuth
+  // Only hash password if it's modified
   if (!this.isModified('password')) return next();
   
-  // Skip hashing for Google OAuth users (they don't have passwords)
-  if (this.authProvider === 'google') return next();
-  
-  // Hash password for local auth users
+  // Hash password if provided (works for both local and Google users who want to add a password)
   if (this.password) {
-    this.password = await bcrypt.hash(this.password, 12);
+    // Check if password is already hashed (starts with $2a$ or $2b$)
+    const isAlreadyHashed = /^\$2[ab]\$\d+\$/.test(this.password);
+    if (!isAlreadyHashed) {
+      this.password = await bcrypt.hash(this.password, 12);
+    }
   }
   next();
 });

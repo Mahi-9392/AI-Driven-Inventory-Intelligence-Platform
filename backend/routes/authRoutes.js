@@ -1,5 +1,5 @@
 import express from 'express';
-import { signup, login, getGoogleAuthUrl, handleGoogleCallback } from '../controllers/authController.js';
+import { signup, login, getGoogleAuthUrl, handleGoogleCallback, setPassword } from '../controllers/authController.js';
 import { body, validationResult } from 'express-validator';
 
 const router = express.Router();
@@ -36,6 +36,14 @@ router.post('/login', validateLogin, login);
 // Google OAuth routes
 router.get('/google/url', getGoogleAuthUrl);
 router.get('/google/callback', handleGoogleCallback);
+
+// Set password route (for Google OAuth users or password updates)
+const validateSetPassword = [
+  body('email').isEmail().normalizeEmail().withMessage('Please provide a valid email address'),
+  body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
+  handleValidationErrors
+];
+router.post('/set-password', validateSetPassword, setPassword);
 
 export default router;
 
