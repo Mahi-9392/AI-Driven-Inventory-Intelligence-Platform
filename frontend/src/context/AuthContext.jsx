@@ -50,7 +50,8 @@ export const AuthProvider = ({ children }) => {
       
       return { 
         success: false, 
-        message: errorMessage
+        message: errorMessage,
+        code: error.response?.data?.code
       };
     }
   };
@@ -83,7 +84,8 @@ export const AuthProvider = ({ children }) => {
       
       return { 
         success: false, 
-        message: errorMessage
+        message: errorMessage,
+        code: error.response?.data?.code
       };
     }
   };
@@ -128,7 +130,8 @@ export const AuthProvider = ({ children }) => {
       
       return { 
         success: false, 
-        message: errorMessage
+        message: errorMessage,
+        code: error.response?.data?.code
       };
     }
   };

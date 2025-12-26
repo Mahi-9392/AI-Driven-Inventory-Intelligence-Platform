@@ -1,13 +1,17 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { authRequest } from '../../request/authRequest';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [errorCode, setErrorCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [settingPassword, setSettingPassword] = useState(false);
+  const [showSetPassword, setShowSetPassword] = useState(false);
   const { login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -23,6 +27,8 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setErrorCode('');
+    setShowSetPassword(false);
     setLoading(true);
 
     const result = await login(email, password);
@@ -31,9 +37,40 @@ const LoginPage = () => {
       navigate('/dashboard');
     } else {
       setError(result.message);
+      // Check if this is a Google-only account error
+      if (result.code === 'GOOGLE_ONLY_ACCOUNT' || result.message.includes('Google sign-in')) {
+        setErrorCode('GOOGLE_ONLY_ACCOUNT');
+        setShowSetPassword(true);
+      }
     }
     
     setLoading(false);
+  };
+
+  const handleSetPassword = async (e) => {
+    e.preventDefault();
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters');
+      return;
+    }
+
+    setError('');
+    setSettingPassword(true);
+
+    try {
+      await authRequest.setPassword(email, password);
+      // Password set successfully, now try to log in
+      const result = await login(email, password);
+      if (result.success) {
+        navigate('/dashboard');
+      } else {
+        setError('Password set, but login failed. Please try again.');
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to set password. Please try again.');
+    } finally {
+      setSettingPassword(false);
+    }
   };
 
   const handleGoogleLogin = async () => {
@@ -71,13 +108,64 @@ const LoginPage = () => {
         <div className="card shadow-lg">
           <form className="space-y-5" onSubmit={handleSubmit}>
             {error && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+              <div className={`p-3 border rounded-lg ${errorCode === 'GOOGLE_ONLY_ACCOUNT' ? 'bg-amber-50 border-amber-200' : 'bg-red-50 border-red-200'}`}>
                 <div className="flex items-start gap-2">
-                  <svg className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className={`w-5 h-5 flex-shrink-0 mt-0.5 ${errorCode === 'GOOGLE_ONLY_ACCOUNT' ? 'text-amber-600' : 'text-red-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <p className="text-sm text-red-800">{error}</p>
+                  <div className="flex-1">
+                    <p className={`text-sm ${errorCode === 'GOOGLE_ONLY_ACCOUNT' ? 'text-amber-800' : 'text-red-800'}`}>{error}</p>
+                    {errorCode === 'GOOGLE_ONLY_ACCOUNT' && !showSetPassword && (
+                      <button
+                        type="button"
+                        onClick={() => setShowSetPassword(true)}
+                        className="mt-2 text-sm font-semibold text-amber-700 hover:text-amber-800 underline"
+                      >
+                        Set a password for this account
+                      </button>
+                    )}
+                  </div>
                 </div>
+              </div>
+            )}
+
+            {showSetPassword && (
+              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm font-medium text-blue-900 mb-3">
+                  Set a password to enable email/password login
+                </p>
+                <p className="text-xs text-blue-700 mb-3">
+                  You can use both Google sign-in and email/password after setting a password.
+                </p>
+                <button
+                  type="button"
+                  onClick={handleSetPassword}
+                  disabled={settingPassword || password.length < 6}
+                  className="w-full btn-primary text-sm py-2"
+                >
+                  {settingPassword ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Setting password...
+                    </span>
+                  ) : (
+                    'Set Password & Sign In'
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowSetPassword(false);
+                    setError('');
+                    setErrorCode('');
+                  }}
+                  className="mt-2 w-full text-sm text-blue-700 hover:text-blue-800"
+                >
+                  Cancel
+                </button>
               </div>
             )}
 
@@ -117,7 +205,7 @@ const LoginPage = () => {
 
             <button
               type="submit"
-              disabled={loading || googleLoading}
+              disabled={loading || googleLoading || settingPassword || showSetPassword}
               className="btn-primary w-full"
             >
               {loading ? (

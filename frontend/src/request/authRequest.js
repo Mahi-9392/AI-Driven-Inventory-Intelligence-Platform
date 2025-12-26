@@ -12,5 +12,9 @@ export const authRequest = {
   getGoogleAuthUrl: () => {
     return axiosInstance.get('/auth/google/url');
   },
+
+  setPassword: (email, password) => {
+    return axiosInstance.post('/auth/set-password', { email, password });
+  },
 };
 
