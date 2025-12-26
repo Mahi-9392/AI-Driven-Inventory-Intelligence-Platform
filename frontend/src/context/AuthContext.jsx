@@ -90,20 +90,37 @@ export const AuthProvider = ({ children }) => {
 
   const loginWithGoogle = async () => {
     try {
+      console.log('🔵 Initiating Google OAuth...');
+      console.log('🔵 API Base URL:', import.meta.env.VITE_API_BASE_URL || '/api');
+      
       const response = await authRequest.getGoogleAuthUrl();
       const { authUrl } = response.data;
+      
+      console.log('✅ Google OAuth URL received, redirecting...');
       
       // Redirect to Google OAuth
       window.location.href = authUrl;
       
       return { success: true };
     } catch (error) {
-      console.error('Google OAuth initiation error:', error);
+      console.error('❌ Google OAuth initiation error:', error);
+      console.error('❌ Error details:', {
+        message: error.message,
+        response: error.response?.data,
+        request: error.request,
+        config: error.config
+      });
+      
       let errorMessage = 'Failed to initiate Google sign-in';
       
       if (error.response) {
         errorMessage = error.response.data?.message || error.response.data?.error || errorMessage;
       } else if (error.request) {
+        // Request was made but no response received
+        console.error('❌ No response from server. Check:');
+        console.error('   1. Is backend running?');
+        console.error('   2. Is VITE_API_BASE_URL set correctly?');
+        console.error('   3. Is CORS configured?');
         errorMessage = 'Cannot connect to server. Please check if the backend is running.';
       } else {
         errorMessage = error.message || errorMessage;
