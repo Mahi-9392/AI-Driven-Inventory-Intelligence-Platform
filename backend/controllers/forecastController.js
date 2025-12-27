@@ -29,17 +29,10 @@ export const generateForecast = async (req, res, next) => {
     // All previous forecasts are deleted when a new CSV is uploaded,
     // ensuring forecasts always reflect the current business state.
 
-    // Compute deterministic analytics from latest data snapshot
     let analytics;
     try {
       analytics = await computeAnalytics(userId, productId, region);
-      console.log('Analytics computed successfully:', {
-        movingAverage: analytics.movingAverage,
-        dataPoints: analytics.dataPoints,
-        currentStock: analytics.currentStock
-      });
     } catch (error) {
-      console.error('Analytics computation error:', error);
       return res.status(400).json({ 
         message: error.message || 'Failed to compute analytics. Please ensure you have uploaded CSV data for this product and region.',
         error: error.message 
@@ -124,9 +117,7 @@ export const generateForecast = async (req, res, next) => {
       existingForecastDoc.metadata.dataPointsUsed = analytics.dataPoints;
       await existingForecastDoc.save();
       forecast = existingForecastDoc;
-      console.log(`Updated existing forecast for ${productId} in ${region}`);
     } else {
-      // Create new forecast
       forecast = new Forecast({
         userId: userObjectId,
         productId,
@@ -150,7 +141,6 @@ export const generateForecast = async (req, res, next) => {
         }
       });
       await forecast.save();
-      console.log(`Created new forecast for ${productId} in ${region}`);
     }
 
     const message = existingForecastDoc 

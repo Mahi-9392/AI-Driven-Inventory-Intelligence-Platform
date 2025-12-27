@@ -37,15 +37,12 @@ export const AuthProvider = ({ children }) => {
       
       return { success: true };
     } catch (error) {
-      console.error('Login error:', error);
-      console.error('Login error response:', error.response?.data);
       let errorMessage = 'Login failed';
       let errorCode = null;
       
       if (error.response) {
         errorMessage = error.response.data?.message || error.response.data?.error || 'Login failed';
         errorCode = error.response.data?.code || null;
-        console.log('Error code from backend:', errorCode);
       } else if (error.request) {
         errorMessage = 'Cannot connect to server. Please check if the backend is running.';
       } else {
@@ -73,17 +70,13 @@ export const AuthProvider = ({ children }) => {
       
       return { success: true };
     } catch (error) {
-      console.error('Signup error:', error);
       let errorMessage = 'Signup failed';
       
       if (error.response) {
-        // Server responded with error
         errorMessage = error.response.data?.message || error.response.data?.error || 'Signup failed';
       } else if (error.request) {
-        // Request was made but no response received
         errorMessage = 'Cannot connect to server. Please check if the backend is running.';
       } else {
-        // Something else happened
         errorMessage = error.message || 'Signup failed';
       }
       
@@ -97,33 +90,18 @@ export const AuthProvider = ({ children }) => {
 
   const loginWithGoogle = async () => {
     try {
-      console.log('🔵 Initiating Google OAuth...');
-      console.log('🔵 API Base URL:', import.meta.env.VITE_API_BASE_URL || '/api');
-      
-      // Get the auth URL from backend
       const response = await authRequest.getGoogleAuthUrl();
       const { authUrl } = response.data;
       
-      console.log('✅ Google OAuth URL received, redirecting...');
-      
-      // Immediately redirect - don't wait for anything else
-      // Use window.location.replace to avoid issues with back button
       window.location.replace(authUrl);
       
-      // Return success immediately - page is redirecting
       return { success: true };
     } catch (error) {
-      console.error('❌ Google OAuth initiation error:', error);
-      
-      // Only return error if it's a server error (not network/timeout)
-      // Network errors might be transient, so provide a clearer message
       let errorMessage = 'Failed to initiate Google sign-in';
       
       if (error.response) {
-        // Server responded with error
         errorMessage = error.response.data?.message || error.response.data?.error || errorMessage;
       } else if (error.request) {
-        // Request was made but no response received - likely network issue or timeout
         errorMessage = 'Connection timeout. Please try again.';
       } else {
         errorMessage = error.message || errorMessage;
@@ -151,7 +129,6 @@ export const AuthProvider = ({ children }) => {
       
       return { success: true };
     } catch (error) {
-      console.error('Google callback handling error:', error);
       return { 
         success: false, 
         message: 'Failed to complete Google sign-in'

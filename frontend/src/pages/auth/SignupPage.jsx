@@ -58,7 +58,6 @@ const SignupPage = () => {
       }
       // Note: If successful, page redirects, so we don't need to set loading to false
     } catch (err) {
-      console.error('Google signup error:', err);
       setError('Failed to initiate Google sign-in. Please try again.');
       setGoogleLoading(false);
     }

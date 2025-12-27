@@ -1,18 +1,6 @@
 import axios from 'axios';
 
-// Use relative URL to leverage Vite proxy, or full URL if VITE_API_BASE_URL is set
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
-
-// Debug: Log API base URL (always log in browser for debugging)
-console.log('🔧 API Base URL:', API_BASE_URL);
-console.log('🔧 VITE_API_BASE_URL env:', import.meta.env.VITE_API_BASE_URL);
-
-// Make API_BASE_URL available globally for debugging in browser console
-if (typeof window !== 'undefined') {
-  window.__API_BASE_URL__ = API_BASE_URL;
-  window.__VITE_API_BASE_URL__ = import.meta.env.VITE_API_BASE_URL;
-  console.log('💡 To check API URL in console, type: window.__API_BASE_URL__');
-}
 
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,

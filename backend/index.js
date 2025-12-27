@@ -47,17 +47,12 @@ const corsOptions = {
       return callback(null, true);
     }
     
-    // Reject other origins
-    console.warn(`⚠️  CORS blocked origin: ${origin}`);
     callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 };
-
-console.log('🌐 CORS allowed origins:', allowedOrigins);
-console.log('🌐 CORS also allows: *.vercel.app (preview deployments)');
 
 // Middleware
 app.use(cors(corsOptions));
@@ -72,42 +67,12 @@ const mongoOptions = {
   serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
 };
 
-// For MongoDB Atlas (mongodb+srv), ensure proper connection
-if (mongoUri.includes('mongodb+srv://')) {
-  console.log('Connecting to MongoDB Atlas...');
-}
-
 mongoose.connect(mongoUri, mongoOptions)
 .then(() => {
-  console.log('✅ MongoDB connected successfully');
-  console.log(`   Database: ${mongoose.connection.name}`);
+  console.log('MongoDB connected successfully');
 })
 .catch((err) => {
-  console.error('❌ MongoDB connection error:', err.message);
-  if (mongoUri.includes('mongodb+srv://')) {
-    console.error('\n📋 MongoDB Atlas Troubleshooting:');
-    console.error('   1. IP Address Not Whitelisted (MOST COMMON):');
-    console.error('      → Go to https://cloud.mongodb.com/');
-    console.error('      → Network Access → Add IP Address');
-    console.error('      → Use "Allow Access from Anywhere" (0.0.0.0/0) for testing');
-    console.error('      → Wait 1-2 minutes after adding');
-    console.error('');
-    console.error('   2. Check Username/Password:');
-    console.error('      → Verify in .env file');
-    console.error('      → Special chars must be URL-encoded (@ = %40, : = %3A)');
-    console.error('');
-    console.error('   3. Test connection: node test-mongodb-connection.js');
-    console.error('');
-    console.error('   💡 Tip: If issues persist, use local MongoDB for testing:');
-    console.error('      MONGODB_URI=mongodb://localhost:27017/inventory-intelligence');
-  } else {
-    console.error('\n📋 Local MongoDB Troubleshooting:');
-    console.error('   1. Make sure MongoDB is running locally');
-    console.error('   2. Check the connection string in .env file');
-    console.error('   3. Try: mongosh (to test MongoDB CLI)');
-  }
-  // Don't exit - allow server to start (some endpoints might work without DB)
-  console.error('\n⚠️  Server will continue, but database operations will fail.');
+  console.error('MongoDB connection error:', err.message);
 });
 
 // Routes

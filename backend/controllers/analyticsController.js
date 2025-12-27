@@ -7,44 +7,28 @@ export const computeAnalytics = async (userId, productId, region) => {
     ? new mongoose.Types.ObjectId(userId) 
     : userId;
 
-  console.log(`computeAnalytics: userId=${userId}, productId=${productId}, region=${region}`);
-
-  // Get historical data for the product and region
-  // Sort by date first, then by _id for consistent ordering (deterministic)
   const data = await InventoryData.find({
     userId: userObjectId,
     productId,
     region
   })
-    .sort({ date: 1, _id: 1 }) // Sort by date, then _id for deterministic results
+    .sort({ date: 1, _id: 1 })
     .lean();
 
-  console.log(`computeAnalytics: Found ${data.length} records for product ${productId} in region ${region}`);
-  
-  // Log sample data to verify consistency
-  if (data.length > 0) {
-    console.log(`Sample data - First record: date=${data[0].date}, unitsSold=${data[0].unitsSold}, stock=${data[0].stockAvailable}`);
-    console.log(`Sample data - Last record: date=${data[data.length - 1].date}, unitsSold=${data[data.length - 1].unitsSold}, stock=${data[data.length - 1].stockAvailable}`);
-  }
-
   if (data.length === 0) {
-    // Try with string userId as fallback
     const dataStr = await InventoryData.find({
       userId: userId.toString(),
       productId,
       region
     })
-      .sort({ date: 1, _id: 1 }) // Sort by date, then _id for deterministic results
+      .sort({ date: 1, _id: 1 })
       .lean();
     
     if (dataStr.length === 0) {
       throw new Error(`No historical data found for product "${productId}" in region "${region}". Please upload CSV data for this product and region combination.`);
     }
     
-    console.log(`computeAnalytics: Found ${dataStr.length} records using string userId`);
-    // Use the data found with string userId
-    const analytics = calculateAnalytics(dataStr);
-    return analytics;
+    return calculateAnalytics(dataStr);
   }
 
   const analytics = calculateAnalytics(data);
@@ -75,7 +59,7 @@ function calculateAnalytics(data) {
   // Calculate regional volatility (coefficient of variation)
   const regionalVolatility = calculateVolatility(sortedData);
 
-  const analytics = {
+  return {
     movingAverage,
     growthRate,
     salesVelocity,
@@ -83,17 +67,6 @@ function calculateAnalytics(data) {
     dataPoints: sortedData.length,
     currentStock: sortedData[sortedData.length - 1]?.stockAvailable || 0
   };
-
-  console.log('Calculated analytics (deterministic):', {
-    movingAverage: analytics.movingAverage.toFixed(2),
-    growthRate: analytics.growthRate.toFixed(2),
-    salesVelocity: analytics.salesVelocity.toFixed(2),
-    volatility: analytics.regionalVolatility.toFixed(2),
-    dataPoints: analytics.dataPoints,
-    currentStock: analytics.currentStock
-  });
-
-  return analytics;
 }
 
 function calculateMovingAverage(data, window = 7) {
