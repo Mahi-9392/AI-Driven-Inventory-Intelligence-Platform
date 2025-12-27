@@ -82,26 +82,53 @@ Traditional inventory management relies on basic spreadsheets and guesswork. Thi
 
 ## 🖼️ Screenshots & Demo
 
-> **📸 Want to add screenshots?** 
-> 
-> 1. Take screenshots of your application (dashboard, forecasts, inventory page, etc.)
-> 2. Create a `docs/screenshots/` folder in the project root
-> 3. Add your images there (e.g., `dashboard.png`, `forecast-page.png`)
-> 4. Update this section with:
-> ```markdown
-> ### Dashboard View
-> ![Dashboard](./docs/screenshots/dashboard.png)
-> 
-> ### Forecast Generation
-> ![Forecasts](./docs/screenshots/forecast-page.png)
-> 
-> ### Inventory Management
-> ![Inventory](./docs/screenshots/inventory-page.png)
-> ```
-> 
-> **Recommended sizes:** 1200x800px or similar aspect ratio for best display on GitHub
+### 🏠 Landing Page
+The beautiful landing page welcomes users with a clean, modern design.
 
-*Add your screenshots here to showcase your application!*
+![Landing Page](./docs/screenshots/Landing_Page.png)
+
+---
+
+### 🔐 Authentication Pages
+
+#### Login Page
+Secure login with email/password or Google OAuth.
+
+![Login Page](./docs/screenshots/Login_Page.png)
+
+#### Signup Page
+Easy account creation with multiple authentication options.
+
+![Signup Page](./docs/screenshots/Signup_page.png)
+
+---
+
+### 📊 Dashboard
+Get a comprehensive overview of your inventory with real-time insights and analytics.
+
+![Dashboard](./docs/screenshots/Dashboard.png)
+
+![Dashboard Overview](./docs/screenshots/Dashboard1.png)
+
+---
+
+### 📦 Inventory Management
+Upload CSV files and manage your inventory data with ease.
+
+![Inventory Page](./docs/screenshots/Inventory.png)
+
+![Inventory Details](./docs/screenshots/Inventory1.png)
+
+---
+
+### 🔮 AI-Powered Forecasts
+Generate intelligent demand forecasts with AI-powered predictions and risk analysis.
+
+![Forecasts Page](./docs/screenshots/Forecasts.png)
+
+![Forecast Generation](./docs/screenshots/Forecasts1.png)
+
+![Forecast Details](./docs/screenshots/Forecasts2.png)
 
 ---
 
