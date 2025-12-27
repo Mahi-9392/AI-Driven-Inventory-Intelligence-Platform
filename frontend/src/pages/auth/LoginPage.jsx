@@ -38,16 +38,22 @@ const LoginPage = () => {
 
 
   const handleGoogleLogin = async () => {
+    setGoogleLoading(true);
+    setError('');
+    
     try {
-      setGoogleLoading(true);
-      setError('');
       const result = await loginWithGoogle();
+      
+      // If successful, redirect happens immediately - we don't need to do anything
+      // If failed, show error (but redirect might still be happening in background)
       if (!result.success) {
         setError(result.message);
+        setGoogleLoading(false);
       }
+      // Note: If successful, page redirects, so we don't need to set loading to false
     } catch (err) {
+      console.error('Google login error:', err);
       setError('Failed to initiate Google sign-in. Please try again.');
-    } finally {
       setGoogleLoading(false);
     }
   };

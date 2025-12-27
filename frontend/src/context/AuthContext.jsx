@@ -100,35 +100,31 @@ export const AuthProvider = ({ children }) => {
       console.log('🔵 Initiating Google OAuth...');
       console.log('🔵 API Base URL:', import.meta.env.VITE_API_BASE_URL || '/api');
       
+      // Get the auth URL from backend
       const response = await authRequest.getGoogleAuthUrl();
       const { authUrl } = response.data;
       
       console.log('✅ Google OAuth URL received, redirecting...');
       
-      // Redirect to Google OAuth
-      window.location.href = authUrl;
+      // Immediately redirect - don't wait for anything else
+      // Use window.location.replace to avoid issues with back button
+      window.location.replace(authUrl);
       
+      // Return success immediately - page is redirecting
       return { success: true };
     } catch (error) {
       console.error('❌ Google OAuth initiation error:', error);
-      console.error('❌ Error details:', {
-        message: error.message,
-        response: error.response?.data,
-        request: error.request,
-        config: error.config
-      });
       
+      // Only return error if it's a server error (not network/timeout)
+      // Network errors might be transient, so provide a clearer message
       let errorMessage = 'Failed to initiate Google sign-in';
       
       if (error.response) {
+        // Server responded with error
         errorMessage = error.response.data?.message || error.response.data?.error || errorMessage;
       } else if (error.request) {
-        // Request was made but no response received
-        console.error('❌ No response from server. Check:');
-        console.error('   1. Is backend running?');
-        console.error('   2. Is VITE_API_BASE_URL set correctly?');
-        console.error('   3. Is CORS configured?');
-        errorMessage = 'Cannot connect to server. Please check if the backend is running.';
+        // Request was made but no response received - likely network issue or timeout
+        errorMessage = 'Connection timeout. Please try again.';
       } else {
         errorMessage = error.message || errorMessage;
       }
