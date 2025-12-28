@@ -320,7 +320,7 @@ PROD002,Keyboard,Europe,2024-01-15,200,800
 ### Infrastructure
 - MongoDB Atlas - Cloud database (or local MongoDB)
 - Vercel - Frontend hosting
-- Render/Railway - Backend hosting
+- Render - Backend hosting
 
 ---
 
@@ -376,9 +376,9 @@ AI-Driven-Inventory-Intelligence-Platform/
    - `VITE_API_BASE_URL`: Your backend API URL
 5. Deploy
 
-### Backend (Render/Railway)
+### Backend (Render)
 
-1. Create a new service in [Render](https://render.com/) or [Railway](https://railway.app/)
+1. Create a new service in [Render](https://render.com/)
 2. Connect your GitHub repository
 3. Set root directory to `backend/`
 4. Add environment variables from `.env` file
