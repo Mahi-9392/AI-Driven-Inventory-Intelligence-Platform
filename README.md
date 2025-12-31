@@ -3,6 +3,8 @@
 Live Application (Production):
 https://ai-driven-inventory-intelligence.vercel.app/
 
+**Note:** The backend runs on Render's free tier, which may take 30-60 seconds to activate after inactivity. If you encounter connection issues, please click "Continue with Google" 3-4 times to wake up the backend service. The application will be fully functional once the backend is active.
+
 Working Demo (Application Walkthrough):
 https://drive.google.com/file/d/11bemULwrZBkEJCthuEOlOrnVvasnsjRO/view?usp=sharing
 
